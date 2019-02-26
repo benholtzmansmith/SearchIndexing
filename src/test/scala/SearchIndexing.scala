@@ -81,3 +81,56 @@ class ThreeStringKeyDictionarySpec extends FunSpec with Matchers {
     }
   }
 }
+
+class NestedIndexSpec extends FunSpec with Matchers {
+
+  describe("index contains"){
+    describe("when the index keys contain a value that matches the start of the search term"){
+      it("should return true"){
+        val keys = List("aa", "ab", "ac")
+        val searchTerm = "abe"
+        assert(NestedIndex.indexKeysContains(keys, searchTerm) == true)
+      }
+    }
+    describe("when the index keys don't contain a value that matches the start of the search term"){
+      it("should return false"){
+        val keys = List("aa", "ab", "ac")
+        val searchTerm = "adam"
+        assert(!NestedIndex.indexKeysContains(keys, searchTerm))
+      }
+    }
+  }
+  describe("find"){
+    it("should find values that are keys that contain the search term"){
+      val dict = NestedIndex(
+        MM(
+          List( "a", "b") ->
+            NestedIndex(
+              MM( List( "aab", "aac" ) -> NestedIndex( MM() ) )
+            ),
+          List( "c", "d") -> NestedIndex( MM() )
+        )
+      )
+      val values = dict.find( "aa" )
+      assert( values == List("aab", "aac"))
+    }
+    it("should not find values that are below"){
+      val dict = NestedIndex(
+        MM(
+          List( "a", "b") ->
+            NestedIndex(
+              MM( List( "aab", "aac" ) ->
+                NestedIndex(
+                  MM(
+                    List( "aabaa", "aacaa" ) -> NestedIndex( MM() )
+                  )
+                )
+              )
+            )
+        )
+      )
+      val values = dict.find( "aa" )
+      assert( values == List("aabaa", "aacaa"))
+    }
+  }
+}

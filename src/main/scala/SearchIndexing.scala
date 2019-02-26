@@ -11,8 +11,8 @@ object Dictionary {
 }
 
 case class Dictionary( index: MM[String, List[String]] ) {
-  def find(key:String):List[String] = {
-    index.find(_._1 == key).map(_._2).toList.flatten
+  def find(searchTerm:String):List[String] = {
+    index.find(_._1 == searchTerm).map(_._2).toList.flatten
   }
   def add( string: String ): Dictionary = {
     val firstLetter = string.slice( 0, 1 )
@@ -36,8 +36,8 @@ object ThreeStringKeyDictionary {
   def apply(): ThreeStringKeyDictionary = new ThreeStringKeyDictionary( MM() )
 }
 case class ThreeStringKeyDictionary( index: MM[List[String], List[String]] ) {
-  def find(key:String):List[String] = {
-    index.find(_._1.contains(key)).map(_._2).toList.flatten
+  def find(searchTerm:String):List[String] = {
+    index.find(_._1.contains(searchTerm)).map(_._2).toList.flatten
   }
   def add( string: String ): ThreeStringKeyDictionary = {
     val firstTwo = string.slice( 0, 2 )
@@ -63,5 +63,61 @@ case class ThreeStringKeyDictionary( index: MM[List[String], List[String]] ) {
       }
     }
     ThreeStringKeyDictionary( index ++ update )
+  }
+}
+
+/** {
+  *   [aa, ab]: {
+  *     ['aaa', 'aba']: {
+  *       ['aaaa']: {}
+  *     }
+  *     ['aab', 'abb']:...
+  *   }
+  *   [ac, ad]: [ 'ada'],
+  * }
+  *
+  * if (value.isEmpty() ) return keys
+  * else value.continueSearch()
+  *
+  */
+
+object NestedIndex{
+  def apply(): NestedIndex = new NestedIndex( MM() )
+
+  def indexKeysContains(candidates:List[String], searchTerm:String):Boolean = {
+    assert(
+      candidates.forall( candidate => candidates.headOption.exists(_.length == candidate.length)),
+      "all candidates need to be the same length"
+    )
+    candidates.headOption.map{_.length} match {
+      case Some(candidateLength) =>
+        val start = searchTerm.slice(0, candidateLength )
+        candidates.exists( _.contains(start))
+      case None => false
+    }
+  }
+}
+//Recursive Data Structure
+case class NestedIndex(index: MM[List[String], NestedIndex] ) {
+
+  /**
+    * Returns deepest match in the index tree
+    * So for search term "aaa"
+    *
+    * With index:
+    *   ['a'] : { ['aa']: { ['aaac': {} ]} }
+    *
+    * Only 'aaac' is returned
+    *
+    * */
+  private def search(branch: NestedIndex, searchTerm:String, matchedKeys:List[String]): List[String] = {
+    branch.index.find{ case (keys, _) => NestedIndex.indexKeysContains(keys, searchTerm) } match {
+      case Some((keys, matched)) => search(matched, searchTerm, keys)
+      case None => matchedKeys
+    }
+  }
+
+  def find(searchTerm:String):List[String] = {
+    search(this, searchTerm, Nil)
   }
 }
