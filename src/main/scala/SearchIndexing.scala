@@ -1,4 +1,4 @@
-import scala.collection.mutable.{ Map => MM }
+import scala.collection.mutable.{ Map => MMap }
 
 /** [
   *   a: [ 'alpha', 'amanada'],
@@ -7,10 +7,10 @@ import scala.collection.mutable.{ Map => MM }
   *
   */
 object Dictionary {
-  def apply(): Dictionary = new Dictionary( MM() )
+  def apply(): Dictionary = new Dictionary( MMap() )
 }
 
-case class Dictionary( index: MM[String, List[String]] ) {
+case class Dictionary( index: MMap[String, List[String]] ) {
   def find(searchTerm:String):List[String] = {
     index.find(_._1 == searchTerm).map(_._2).toList.flatten
   }
@@ -21,7 +21,7 @@ case class Dictionary( index: MM[String, List[String]] ) {
       case Some( k ) => k :+ string
       case None      => List( string )
     }
-    Dictionary( index ++ MM( firstLetter -> update ) )
+    Dictionary( index ++ MMap( firstLetter -> update ) )
   }
 }
 
@@ -33,21 +33,21 @@ case class Dictionary( index: MM[String, List[String]] ) {
   */
 
 object ThreeStringKeyDictionary {
-  def apply(): ThreeStringKeyDictionary = new ThreeStringKeyDictionary( MM() )
+  def apply(): ThreeStringKeyDictionary = new ThreeStringKeyDictionary( MMap() )
 }
-case class ThreeStringKeyDictionary( index: MM[List[String], List[String]] ) {
+case class ThreeStringKeyDictionary( index: MMap[List[String], List[String]] ) {
   def find(searchTerm:String):List[String] = {
     index.find(_._1.contains(searchTerm)).map(_._2).toList.flatten
   }
   def add( string: String ): ThreeStringKeyDictionary = {
     val firstTwo = string.slice( 0, 2 )
     val maybeKey: Option[List[String]] = index.keys.find( _.contains( firstTwo ) )
-    val update: MM[List[String], List[String]] = maybeKey match {
+    val update: MMap[List[String], List[String]] = maybeKey match {
       case Some( key ) =>
         val valuesOpt = index.get( key )
         valuesOpt match {
-          case Some( values ) => MM( key -> { values :+ string } )
-          case None           => MM( key -> List( string ) )
+          case Some( values ) => MMap( key -> { values :+ string } )
+          case None           => MMap( key -> List( string ) )
         }
       case None => {
         val matchedKeys = index.keys.find( _.length < 3 )
@@ -56,9 +56,9 @@ case class ThreeStringKeyDictionary( index: MM[List[String], List[String]] ) {
             val updatedValue = index.get( key ).toList.flatten :+ string
             val updatedKey = key :+ firstTwo
             index.remove( key )
-            MM( updatedKey -> updatedValue )
+            MMap( updatedKey -> updatedValue )
           case None =>
-            MM( List( firstTwo ) -> List( string ) )
+            MMap( List( firstTwo ) -> List( string ) )
         }
       }
     }
@@ -82,7 +82,7 @@ case class ThreeStringKeyDictionary( index: MM[List[String], List[String]] ) {
   */
 
 object NestedIndex{
-  def apply(): NestedIndex = new NestedIndex( MM() )
+  def apply(): NestedIndex = new NestedIndex( MMap() )
 
   def indexKeysContains(candidates:List[String], searchTerm:String):Boolean = {
     assert(
@@ -98,7 +98,7 @@ object NestedIndex{
   }
 }
 //Recursive Data Structure
-case class NestedIndex(index: MM[List[String], NestedIndex] ) {
+case class NestedIndex(index: MMap[List[String], NestedIndex] ) {
 
   /**
     * Returns deepest match in the index tree

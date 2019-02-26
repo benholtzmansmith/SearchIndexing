@@ -1,6 +1,6 @@
 import org.scalatest.{ FunSpec, Matchers }
 
-import scala.collection.mutable.{ Map => MM }
+import scala.collection.mutable.{ Map => MMap }
 
 class DictionarySpec extends FunSpec with Matchers {
   //Test Dictionary
@@ -8,32 +8,32 @@ class DictionarySpec extends FunSpec with Matchers {
     val emptyDicionary = Dictionary()
     val newDictionary = emptyDicionary.add( "ben" )
     it("should add a new entry"){
-      assert( newDictionary.index == MM( "b" -> List( "ben" ) ) )
+      assert( newDictionary.index == MMap( "b" -> List( "ben" ) ) )
     }
   }
   describe( "A non-empty dictionary" ) {
     describe("when word without a previous key"){
-      val dict = Dictionary( MM( "a" -> List( "alpha" ) ) )
+      val dict = Dictionary( MMap( "a" -> List( "alpha" ) ) )
       describe("gets added to the index"){
         val newDict = dict.add( "ben" )
         it("should make a new entry"){
-          assert( newDict.index == MM( "b" -> List( "ben" ), "a" -> List( "alpha" ) ) )
+          assert( newDict.index == MMap( "b" -> List( "ben" ), "a" -> List( "alpha" ) ) )
         }
       }
     }
     describe("when word with a previous key"){
-      val dict = Dictionary( MM( "a" -> List( "alpha" ), "b" -> List( "ben" ) ) )
+      val dict = Dictionary( MMap( "a" -> List( "alpha" ), "b" -> List( "ben" ) ) )
       describe("gets added to the index"){
         val newDict = dict.add( "adam" )
         it("should make a new entry"){
-          assert( newDict.index == MM( "b" -> List( "ben" ), "a" -> List( "alpha", "adam" ) ) )
+          assert( newDict.index == MMap( "b" -> List( "ben" ), "a" -> List( "alpha", "adam" ) ) )
         }
       }
     }
   }
   describe("find"){
     it("should find the correct values for a key"){
-      val dict = Dictionary( MM( "a" -> List( "alpha" ), "b" -> List( "ben" ) ) )
+      val dict = Dictionary( MMap( "a" -> List( "alpha" ), "b" -> List( "ben" ) ) )
       val values = dict.find( "a" )
       assert( values == List("alpha"))
     }
@@ -47,32 +47,32 @@ class ThreeStringKeyDictionarySpec extends FunSpec with Matchers {
     val emptyDicionary = ThreeStringKeyDictionary()
     val newDictionary = emptyDicionary.add( "ben" )
     it("should add a new entry"){
-      assert( newDictionary.index == MM( List( "be" ) -> List( "ben" ) ) )
+      assert( newDictionary.index == MMap( List( "be" ) -> List( "ben" ) ) )
     }
   }
   describe( "A non-empty dictionary" ) {
     describe("when word without a previous key"){
-      val dict = ThreeStringKeyDictionary( MM( List( "a" ) -> List( "alpha" ) ) )
+      val dict = ThreeStringKeyDictionary( MMap( List( "a" ) -> List( "alpha" ) ) )
       describe("gets added to the index"){
         val newDict = dict.add( "ben" )
         it("should make a new entry"){
-          assert( newDict.index == MM( List( "a", "be" ) -> List( "alpha", "ben" ) ) )
+          assert( newDict.index == MMap( List( "a", "be" ) -> List( "alpha", "ben" ) ) )
         }
       }
     }
     describe("when word with a previous key"){
-      val dict = ThreeStringKeyDictionary( MM( List( "a", "ab", "ac" ) -> List( "alpha" ) ) )
+      val dict = ThreeStringKeyDictionary( MMap( List( "a", "ab", "ac" ) -> List( "alpha" ) ) )
       describe("gets added to the index"){
         val newDict = dict.add( "ben" )
         it("should make a new entry"){
-          assert( newDict.index == MM( List( "a", "ab", "ac" ) -> List( "alpha" ), List( "be" ) -> List( "ben" ) ) )
+          assert( newDict.index == MMap( List( "a", "ab", "ac" ) -> List( "alpha" ), List( "be" ) -> List( "ben" ) ) )
         }
       }
     }
   }
   describe("find"){
     it("should find the correct values for a key"){
-      val dict = ThreeStringKeyDictionary( MM(
+      val dict = ThreeStringKeyDictionary( MMap(
         List( "al", "ac" ) -> List( "alpha" ),
         List( "ad", "as" ) -> List( "adam" )
       ) )
@@ -103,12 +103,12 @@ class NestedIndexSpec extends FunSpec with Matchers {
   describe("find"){
     it("should find values that are keys that contain the search term"){
       val dict = NestedIndex(
-        MM(
+        MMap(
           List( "a", "b") ->
             NestedIndex(
-              MM( List( "aab", "aac" ) -> NestedIndex( MM() ) )
+              MMap( List( "aab", "aac" ) -> NestedIndex( MMap() ) )
             ),
-          List( "c", "d") -> NestedIndex( MM() )
+          List( "c", "d") -> NestedIndex( MMap() )
         )
       )
       val values = dict.find( "aa" )
@@ -116,13 +116,13 @@ class NestedIndexSpec extends FunSpec with Matchers {
     }
     it("should not find values that are below"){
       val dict = NestedIndex(
-        MM(
+        MMap(
           List( "a", "b") ->
             NestedIndex(
-              MM( List( "aab", "aac" ) ->
+              MMap( List( "aab", "aac" ) ->
                 NestedIndex(
-                  MM(
-                    List( "aabaa", "aacaa" ) -> NestedIndex( MM() )
+                  MMap(
+                    List( "aabaa", "aacaa" ) -> NestedIndex( MMap() )
                   )
                 )
               )
