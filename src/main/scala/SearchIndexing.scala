@@ -6,10 +6,6 @@ import scala.collection.mutable.{ Map => MMap }
   *  ]
   *
   */
-object Dictionary {
-  def apply(): Dictionary = new Dictionary( MMap() )
-}
-
 case class Dictionary( index: MMap[String, List[String]] ) {
   def find(searchTerm:String):List[String] = {
     index.find(_._1 == searchTerm).map(_._2).toList.flatten
@@ -24,6 +20,10 @@ case class Dictionary( index: MMap[String, List[String]] ) {
     Dictionary( index ++ MMap( firstLetter -> update ) )
   }
 }
+object Dictionary {
+  def apply(): Dictionary = new Dictionary( MMap() )
+}
+
 
 /** [
   *   [aa, ab, ac]: [ 'ace', 'abe'],
@@ -32,9 +32,6 @@ case class Dictionary( index: MMap[String, List[String]] ) {
   *
   */
 
-object ThreeStringKeyDictionary {
-  def apply(): ThreeStringKeyDictionary = new ThreeStringKeyDictionary( MMap() )
-}
 case class ThreeStringKeyDictionary( index: MMap[List[String], List[String]] ) {
   def find(searchTerm:String):List[String] = {
     index.find(_._1.contains(searchTerm)).map(_._2).toList.flatten
@@ -66,6 +63,9 @@ case class ThreeStringKeyDictionary( index: MMap[List[String], List[String]] ) {
   }
 }
 
+object ThreeStringKeyDictionary {
+  def apply(): ThreeStringKeyDictionary = new ThreeStringKeyDictionary( MMap() )
+}
 /** {
   *   [aa, ab]: {
   *     ['aaa', 'aba']: {
@@ -80,23 +80,6 @@ case class ThreeStringKeyDictionary( index: MMap[List[String], List[String]] ) {
   * else value.continueSearch()
   *
   */
-
-object NestedIndex{
-  def apply(): NestedIndex = new NestedIndex( MMap() )
-
-  def indexKeysContains(candidates:List[String], searchTerm:String):Boolean = {
-    assert(
-      candidates.forall( candidate => candidates.headOption.exists(_.length == candidate.length)),
-      "all candidates need to be the same length"
-    )
-    candidates.headOption.map{_.length} match {
-      case Some(candidateLength) =>
-        val start = searchTerm.slice(0, candidateLength )
-        candidates.exists( _.contains(start))
-      case None => false
-    }
-  }
-}
 //Recursive Data Structure
 case class NestedIndex(index: MMap[List[String], NestedIndex] ) {
 
@@ -119,5 +102,21 @@ case class NestedIndex(index: MMap[List[String], NestedIndex] ) {
 
   def find(searchTerm:String):List[String] = {
     search(this, searchTerm, Nil)
+  }
+}
+object NestedIndex{
+  def apply(): NestedIndex = new NestedIndex( MMap() )
+
+  def indexKeysContains(candidates:List[String], searchTerm:String):Boolean = {
+    assert(
+      candidates.forall( candidate => candidates.headOption.exists(_.length == candidate.length)),
+      "all candidates need to be the same length"
+    )
+    candidates.headOption.map{_.length} match {
+      case Some(candidateLength) =>
+        val start = searchTerm.slice(0, candidateLength )
+        candidates.exists( _.contains(start))
+      case None => false
+    }
   }
 }
