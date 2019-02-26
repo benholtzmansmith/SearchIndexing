@@ -31,6 +31,13 @@ class DictionarySpec extends FunSpec with Matchers {
       }
     }
   }
+  describe("find"){
+    it("should find the correct values for a key"){
+      val dict = Dictionary( MM( "a" -> List( "alpha" ), "b" -> List( "ben" ) ) )
+      val values = dict.find( "a" )
+      assert( values == List("alpha"))
+    }
+  }
 }
 
 
@@ -61,6 +68,16 @@ class ThreeStringKeyDictionarySpec extends FunSpec with Matchers {
           assert( newDict.index == MM( List( "a", "ab", "ac" ) -> List( "alpha" ), List( "be" ) -> List( "ben" ) ) )
         }
       }
+    }
+  }
+  describe("find"){
+    it("should find the correct values for a key"){
+      val dict = ThreeStringKeyDictionary( MM(
+        List( "al", "ac" ) -> List( "alpha" ),
+        List( "ad", "as" ) -> List( "adam" )
+      ) )
+      val values = dict.find( "al" )
+      assert( values == List("alpha"))
     }
   }
 }

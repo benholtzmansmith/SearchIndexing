@@ -11,6 +11,9 @@ object Dictionary {
 }
 
 case class Dictionary( index: MM[String, List[String]] ) {
+  def find(key:String):List[String] = {
+    index.find(_._1 == key).map(_._2).toList.flatten
+  }
   def add( string: String ): Dictionary = {
     val firstLetter = string.slice( 0, 1 )
     val key = index.get( firstLetter )
@@ -33,6 +36,9 @@ object ThreeStringKeyDictionary {
   def apply(): ThreeStringKeyDictionary = new ThreeStringKeyDictionary( MM() )
 }
 case class ThreeStringKeyDictionary( index: MM[List[String], List[String]] ) {
+  def find(key:String):List[String] = {
+    index.find(_._1.contains(key)).map(_._2).toList.flatten
+  }
   def add( string: String ): ThreeStringKeyDictionary = {
     val firstTwo = string.slice( 0, 2 )
     val maybeKey: Option[List[String]] = index.keys.find( _.contains( firstTwo ) )
