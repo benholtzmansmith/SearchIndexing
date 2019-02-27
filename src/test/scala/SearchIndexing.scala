@@ -179,4 +179,39 @@ class SortedListOfWordsSpec extends FunSpec with Matchers {
       }
     }
   }
+  describe("add"){
+    describe("one element list with an ealier word"){
+      it("should add after"){
+        val test = SortedListOfWords(List("alpha"))
+        test.add("charlie")
+        val expected = List("alpha", "charlie")
+        assert(test.words == expected)
+      }
+    }
+    describe("one element list with a later word"){
+      it("should add after"){
+        val test = SortedListOfWords(List("delta"))
+        test.add("charlie")
+        val expected = List("charlie", "delta")
+        assert(test.words == expected)
+      }
+    }
+    describe("complex list"){
+      it("should add in the middle"){
+        val test = SortedListOfWords(List("alpha", "beta", "delta"))
+        test.add("charlie")
+        val expected = List("alpha", "beta", "charlie","delta")
+        assert(test.words == expected)
+      }
+    }
+    describe("empty list"){
+      it("should add"){
+        val test = SortedListOfWords(List())
+        test.add("charlie")
+        val expected = List("charlie")
+        assert(test.words == expected)
+      }
+    }
+
+  }
 }

@@ -21,7 +21,7 @@ object SortedListOfWords {
   }
 }
 
-case class SortedListOfWords(words:List[String] = Nil){
+case class SortedListOfWords(var words:List[String] = Nil){
   import SortedListOfWords._
 
   def sortedList = words
@@ -50,6 +50,37 @@ case class SortedListOfWords(words:List[String] = Nil){
 
   def contains(word:String):Boolean = {
     recursiveBinarySearch(words, word)
+  }
+
+  def recursiveAdd(searchWord:String, remainingWords:List[String]):List[String] = {
+    if (remainingWords.length == 0) List(searchWord)
+    else {
+      val binaryIndex = (remainingWords.length / 2).round
+      val middleWord = remainingWords(binaryIndex)
+      val (beforeSplit, afterSplit) = remainingWords.splitAt(binaryIndex)
+      if (remainingWords.length == 0 || remainingWords.length == 1){
+        if (middleWord.isAfterInAlphabet(searchWord)){
+          List(searchWord, middleWord)
+        }
+        else {
+          List(middleWord, searchWord)
+        }
+      }
+      else if ( middleWord.isBeforeInAlphabet(searchWord) ){
+        /** middle word is before search word in alphabet so keep searching the words afters*/
+        beforeSplit ++ recursiveAdd(searchWord, afterSplit)
+      }
+      else {
+        recursiveAdd(searchWord, beforeSplit) ++ afterSplit
+      }
+    }
+  }
+
+  /**
+    * Returns true if the word was added, returns false if not.
+    * */
+  def add(searchWord:String):Unit = {
+    words = recursiveAdd(searchWord, words)
   }
 }
 
