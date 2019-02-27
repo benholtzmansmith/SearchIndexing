@@ -133,4 +133,31 @@ class NestedIndexSpec extends FunSpec with Matchers {
       assert( values == List("aabaa", "aacaa"))
     }
   }
+  describe("add"){
+    it("should add values"){
+      val dict = NestedIndex(
+        MMap(
+          List( "a", "b") ->
+            NestedIndex(
+              MMap( List( "ab" ) -> NestedIndex( MMap() ) )
+            )
+        )
+      )
+
+      val expected = NestedIndex(
+        MMap(
+          List( "a", "b") ->
+            NestedIndex(
+              MMap(
+                List( "ab" ) -> NestedIndex( MMap() ),
+                List( "ac" ) -> NestedIndex( MMap( List( "acd" ) -> NestedIndex( MMap() )) )
+              )
+            )
+        )
+      )
+      dict.add("acd")
+      assert(dict == expected)
+    }
+  }
+
 }

@@ -1,4 +1,5 @@
-import scala.collection.mutable.{ Map => MMap }
+import scala.annotation.tailrec
+import scala.collection.mutable.{Map => MMap}
 
 /** [
   *   a: [ 'alpha', 'amanada'],
@@ -67,13 +68,13 @@ object ThreeStringKeyDictionary {
   def apply(): ThreeStringKeyDictionary = new ThreeStringKeyDictionary( MMap() )
 }
 /** {
-  *   [aa, ab]: {
+  *   ['aa', 'ab']: {
   *     ['aaa', 'aba']: {
   *       ['aaaa']: {}
   *     }
   *     ['aab', 'abb']:...
   *   }
-  *   [ac, ad]: [ 'ada'],
+  *   ['ac', 'ad']: ['ada'],
   * }
   *
   * if (value.isEmpty() ) return keys
@@ -88,11 +89,12 @@ case class NestedIndex(index: MMap[List[String], NestedIndex] ) {
     * So for search term "aaa"
     *
     * With index:
-    *   ['a'] : { ['aa']: { ['aaac': {} ]} }
+    *   ['a'] : { ['aa']: { ['aac': {} ]} }
     *
-    * Only 'aaac' is returned
+    * Only 'aac' is returned
     *
     * */
+  @tailrec
   private def search(branch: NestedIndex, searchTerm:String, matchedKeys:List[String]): List[String] = {
     branch.index.find{ case (keys, _) => NestedIndex.indexKeysContains(keys, searchTerm) } match {
       case Some((keys, matched)) => search(matched, searchTerm, keys)
@@ -102,6 +104,24 @@ case class NestedIndex(index: MMap[List[String], NestedIndex] ) {
 
   def find(searchTerm:String):List[String] = {
     search(this, searchTerm, Nil)
+  }
+
+  def searchToKey(searchTerm:String) = {
+    searchTerm.slice(0,2).toLowerCase
+  }
+
+  private def addRecusive(branch:NestedIndex, searchTerm:String):NestedIndex = {
+    branch.index.find{ case (keys, _) => NestedIndex.indexKeysContains(keys, searchTerm) } match {
+      case Some((key, nextBranch)) => addRecusive(nextBranch, searchTerm)
+      case None =>
+        branch.index.update(
+        List(searchToKey(searchTerm)), NestedIndex(MMap(List(searchTerm) -> NestedIndex()))
+      ); branch
+    }
+  }
+
+  def add(searchTerm:String) = {
+    addRecusive(this, searchTerm)
   }
 }
 object NestedIndex{
