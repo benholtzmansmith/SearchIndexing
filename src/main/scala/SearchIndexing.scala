@@ -1,6 +1,58 @@
 import scala.annotation.tailrec
 import scala.collection.mutable.{Map => MMap}
 
+
+/** [
+  *   'alpha',
+  *   'beta',
+  *   'charlie'
+  *   ...
+  *  ]
+  *
+  */
+
+object SortedListOfWords {
+  implicit class Alphabetical(word:String){
+    def isBeforeInAlphabet(other:String):Boolean = {
+      other > word
+    }
+
+    def isAfterInAlphabet(other:String):Boolean = !isBeforeInAlphabet(other)
+  }
+}
+
+case class SortedListOfWords(words:List[String] = Nil){
+  import SortedListOfWords._
+
+  def sortedList = words
+
+  def recursiveBinarySearch(candidateWords:List[String], searchWord:String): Boolean = {
+    if (candidateWords.length == 0){
+      false
+    }
+    else {
+      val binaryIndex = (candidateWords.length / 2).round
+      val middleWord = candidateWords(binaryIndex)
+      //Exclude middle word
+      val (before, after) = (candidateWords.slice(0, binaryIndex - 1), candidateWords.slice(binaryIndex + 1 , candidateWords.length - 1))
+      if (middleWord == searchWord){
+        true
+      }
+      else if ( middleWord.isBeforeInAlphabet(searchWord) ){
+        /** middle word is before search word in alphabet so keep searching the words afters*/
+        recursiveBinarySearch(after, searchWord)
+      }
+      else {
+        recursiveBinarySearch(before, searchWord)
+      }
+    }
+  }
+
+  def contains(word:String):Boolean = {
+    recursiveBinarySearch(words, word)
+  }
+}
+
 /** [
   *   a: [ 'alpha', 'amanada'],
   *   b: [ 'beta', brian]

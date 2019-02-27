@@ -159,5 +159,24 @@ class NestedIndexSpec extends FunSpec with Matchers {
       assert(dict == expected)
     }
   }
+}
 
+class SortedListOfWordsSpec extends FunSpec with Matchers {
+  describe("contains"){
+    describe("if the list contains the word"){
+      it("should return true"){
+        assert(SortedListOfWords(List("alpha", "beta", "charlie")).contains("beta"))
+      }
+    }
+    describe("if word is not contained"){
+      it("should return false"){
+        assert(!SortedListOfWords(List("alpha", "beta", "charlie")).contains("delta"))
+      }
+    }
+    describe("if the list is empty"){
+      it("should return false"){
+        assert(!SortedListOfWords(List()).contains("delta"))
+      }
+    }
+  }
 }
